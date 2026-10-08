@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kitapkutusu</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg0:#16120f;--ink:#f1e8d8;--mut:#a39787;--line:#38302a;--acc:#e0a95c;--hdr:rgba(22,18,15,.93);--card:#221c17;--card2:#2e261f}
+:root[data-season=ilkbahar]{--bg0:#16211b;--ink:#eef5e8;--mut:#9fb59f;--line:#2f4434;--acc:#f2a7c3;--hdr:rgba(22,33,27,.93);--card:#1d2c23;--card2:#28392e}
+:root[data-season=yaz]{--bg0:#0f222b;--ink:#f4f1e4;--mut:#9ab7bd;--line:#21424f;--acc:#ffd24d;--hdr:rgba(15,34,43,.93);--card:#173340;--card2:#1f4352}
+:root[data-season=sonbahar]{--bg0:#201510;--ink:#f5e8d8;--mut:#b39a82;--line:#47301f;--acc:#e8832f;--hdr:rgba(32,21,16,.93);--card:#2b1d15;--card2:#3a281c}
+:root[data-season=kis]{--bg0:#0f1722;--ink:#e9f1f8;--mut:#8da3b8;--line:#27384d;--acc:#8fd0ff;--hdr:rgba(15,23,34,.93);--card:#172233;--card2:#1f2e44}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{transition:background .4s;margin:0;background:var(--bg0);color:var(--ink);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;min-height:100vh}
+h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0}
+header{position:sticky;top:0;z-index:5;background:var(--hdr);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 16px}
+.bar{max-width:1200px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.logo{font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;font-weight:700;font-style:italic;color:var(--acc)}
+.search{flex:1 1 220px;min-width:0;padding:11px 16px;font:inherit;background:var(--card);border:1px solid var(--line);border-radius:999px;color:var(--ink)}
+.search:focus{outline:none;border-color:var(--acc)}
+.tabs{display:flex;gap:4px}
+.tab{padding:8px 14px;font:inherit;font-size:.9rem;background:transparent;border:0;border-radius:999px;color:var(--mut);cursor:pointer}
+.tab.on{background:var(--card2);color:var(--ink)}
+main{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:8px 16px 40px}
+.rw{position:relative;margin:20px 0}
+.rw h3{font-size:1.2rem;margin-bottom:8px}
+.strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:8px 2px 14px;scrollbar-width:thin;scrollbar-color:#3a3128 transparent}
+.strip .pt{flex:0 0 138px;scroll-snap-align:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:20px 14px;padding-top:14px}
+.pt{cursor:pointer;min-width:0}
+.po{position:relative;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:linear-gradient(155deg,var(--c),var(--b));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:10px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.pt:hover .po{transform:scale(1.05);box-shadow:0 10px 24px rgba(0,0,0,.6)}
+.po img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pe{color:#fff;opacity:.85;line-height:0}
+.pn{font:700 .8rem/1.2 'Playfair Display',Georgia,serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.pt b{margin-top:8px;font-size:.85rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pt small{color:var(--mut);font-size:.75rem;display:block;margin-top:2px}
+.bd{position:absolute;left:6px;bottom:6px;font-style:normal;font-size:.72rem;background:rgba(0,0,0,.72);color:var(--acc);padding:2px 7px;border-radius:99px}
+.bd.dn{left:auto;right:6px;top:6px;bottom:auto;color:#9fd29f}
+.nav{position:absolute;top:8px;height:207px;width:36px;border:0;background:rgba(0,0,0,.62);color:#fff;font-size:1.6rem;cursor:pointer;opacity:0;transition:opacity .2s;z-index:2}
+.nav.l{left:-6px;border-radius:0 8px 8px 0}.nav.r{right:-6px;border-radius:8px 0 0 8px}
+.sw{position:relative}.sw:hover .nav{opacity:1}
+@media(hover:none){.nav{display:none}}
+.note{color:var(--mut);margin:12px 0 0}
+.empty{text-align:center;padding:26px;border:1px dashed var(--line);border-radius:12px;color:var(--mut);margin-top:16px}
+.gb{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.btn,.gb button{font:inherit;font-size:.9rem;padding:9px 16px;border:1px solid var(--line);background:#2a231d;color:var(--ink);cursor:pointer;border-radius:999px}
+.btn.on{background:var(--acc);color:#1a140e;border-color:var(--acc)}
+#detail{position:fixed;inset:0;z-index:10;overflow:auto;background:var(--bg);color:var(--ink)}
+#fig{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+#fig span{position:absolute;opacity:.18;line-height:0;animation:fl var(--d) ease-in-out var(--dl) infinite alternate}
+@keyframes fl{from{transform:rotate(var(--r)) translateY(0)}to{transform:rotate(calc(var(--r) + 8deg)) translateY(-14px)}}
+.card{position:relative;max-width:560px;margin:0 auto;padding:max(20px,env(safe-area-inset-top,0px)) 16px 40px}
+.back{margin-bottom:14px}
+.paper{background:rgba(18,14,11,.8);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.paper h2{font-size:1.7rem;margin-bottom:4px}
+.tag{display:inline-block;padding:2px 10px;font-size:.75rem;border:1px solid var(--c);color:var(--c);border-radius:99px}
+.stars{display:flex;align-items:center;gap:2px;margin:10px 0}
+.star{background:none;border:0;padding:0 2px;font-size:2.1rem;line-height:1;color:#5b5348;cursor:pointer}
+.star.on{color:var(--acc)}
+.stars:hover .star{color:var(--acc)}.stars .star:hover~.star{color:#5b5348}
+.stars small{margin-left:10px;color:var(--mut)}
+.row{display:flex;gap:8px;margin:12px 0}
+textarea{width:100%;min-height:110px;margin-top:8px;padding:12px;font:inherit;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--ink);border-radius:10px;resize:vertical}
+.stamp{display:inline-block;transform:rotate(-6deg);border:2px solid var(--acc);color:var(--acc);padding:1px 10px;font-weight:700;margin-left:8px;border-radius:4px}
+.rin{width:100%;padding:10px 12px;font:inherit;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--ink);border-radius:10px}
+.rc{border-top:1px solid var(--line);padding:12px 0}.rc p{margin:6px 0 0;line-height:1.5;white-space:pre-wrap}.rc small{color:var(--mut)}.rs{color:var(--acc)}
+.rx{background:none;border:0;color:var(--mut);cursor:pointer;font-size:.75rem;text-decoration:underline}#rev h3{margin-bottom:6px}#rev .note{margin:0 0 10px;font-size:.85rem}
+.seasons{display:flex;gap:2px;margin-left:auto}.sbtn{background:none;border:1px solid transparent;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;opacity:.6}.sbtn:hover{opacity:1}.sbtn.on{color:var(--acc);opacity:1;border-color:var(--acc);background:var(--card2)}
+#sea{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}#sea span{position:absolute;top:-8%;opacity:.3;color:var(--acc);line-height:0;animation:fall linear infinite}@keyframes fall{to{transform:translate(50px,115vh) rotate(360deg)}}
+.fh{font-size:1.2rem;margin:16px 0 4px}.rv{border-bottom:1px solid var(--line);padding:16px 2px}
+.rvh{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.rvt{font:700 1.15rem 'Playfair Display',Georgia,serif;color:var(--ink);cursor:pointer}.rvt:hover{color:var(--acc)}.rvh small{color:var(--mut)}
+.rvu{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:.9rem;white-space:nowrap}
+.av{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;font-weight:600}
+.rvs{margin:4px 0 8px;letter-spacing:1px}.rvs .on{color:var(--acc)}.rvs .off{color:#4b443b}.hr{color:#ff7a3d}
+.rvb{display:flex;gap:14px}.rvp{position:relative;flex:0 0 64px;height:96px;border-radius:5px;overflow:hidden;background:linear-gradient(155deg,var(--c),var(--b));box-shadow:0 3px 8px rgba(0,0,0,.4)}.rvp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rvx{flex:1;min-width:0;line-height:1.5}.rvtxt{white-space:pre-wrap;word-break:break-word}.rvx small{color:var(--mut);display:block;margin-top:4px}
+.spo{background:var(--card);border-radius:8px;padding:18px;text-align:center;color:var(--mut);cursor:pointer;font-size:.9rem}
+.rv.cp .rvp,.rv.cp .rvtl{display:none}.rv.cp .rvh{justify-content:flex-start}
+.rvi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;opacity:.85}.hbtn{background:none;border:0;font-size:1.7rem;color:#5b5348;cursor:pointer;margin-left:10px}.hbtn.on{color:#ff7a3d}.spl{display:block;margin:8px 0;color:var(--mut);font-size:.9rem}
+</style>
+</head>
+<body>
+<div id="sea"></div><header><div class="bar"><span class="logo">Kitapkutusu</span><input id="q" class="search" placeholder="Kitap veya yazar ara…" autocomplete="off"><div class="tabs"><button class="tab on" data-t="k">Keşfet</button><button class="tab" data-t="y">Yorumlar</button><button class="tab" data-t="l">Kitaplığım</button></div><div class="seasons"><button class="sbtn" data-s="ilkbahar" title="İlkbahar">🌸</button><button class="sbtn" data-s="yaz" title="Yaz">☀️</button><button class="sbtn" data-s="sonbahar" title="Sonbahar">🍂</button><button class="sbtn" data-s="kis" title="Kış">❄️</button></div></div></header>
+<main><div id="list"></div></main>
+<div id="detail" hidden><div id="fig"></div><div class="card"><button class="btn back" id="back">← Geri</button><div class="paper" id="paper"></div><div class="paper" id="rev" style="margin-top:16px"></div></div></div>
+<script>
+const G={
+polisiye:{n:'Polisiye',c:'#d1a75a',bg:'#2b2620',f:['🔎','🕵️','📰','🗝️','👣','🎩','🧤','🕯️']},
+ask:{n:'Aşk',c:'#d98a95',bg:'#35232a',f:['💌','💋','❤️','🌹','💍','🕊️','🌷','💞']},
+fantastik:{n:'Fantastik',c:'#a98bd6',bg:'#2a2238',f:['🧙','⚡','🦉','🪄','🏰','🐉','🔮','🧹']},
+bilimkurgu:{n:'Bilim Kurgu',c:'#6fc2d4',bg:'#1d2f38',f:['🚀','🛸','🪐','🤖','⭐','👽','🔭','🌌']},
+korku:{n:'Korku',c:'#c9514e',bg:'#201b1c',f:['🦇','🕸️','🌙','👻','🕯️','🧛','💀','🪦']},
+klasik:{n:'Klasik',c:'#c09a4a',bg:'#2d261b',f:['🪶','📜','🕯️','📖','☕','🖋️','🕰️','🌿']},
+tarih:{n:'Tarih',c:'#c97e5a',bg:'#33251f',f:['🏛️','🗺️','⚔️','📜','🏺','🧭','👑','⛵']}};
+const B=[
+['Doğu Ekspresinde Cinayet','Agatha Christie',1934,'polisiye','murder on the orient express'],
+['Kızıl Dosya','Arthur Conan Doyle',1887,'polisiye','sherlock holmes study in scarlet'],
+['Ejderha Dövmeli Kız','Stieg Larsson',2005,'polisiye','girl with the dragon tattoo'],
+['Da Vinci Şifresi','Dan Brown',2003,'polisiye','da vinci code'],
+['Gülün Adı','Umberto Eco',1980,'polisiye','name of the rose'],
+['Gurur ve Önyargı','Jane Austen',1813,'ask','pride and prejudice gurur ve onyargi'],
+['Kürk Mantolu Madonna','Sabahattin Ali',1943,'ask',''],
+['Anna Karenina','Lev Tolstoy',1877,'ask',''],
+['Harry Potter ve Felsefe Taşı','J. K. Rowling',1997,'fantastik','harry potter philosopher stone'],
+['Hobbit','J. R. R. Tolkien',1937,'fantastik','the hobbit'],
+['Yüzüklerin Efendisi','J. R. R. Tolkien',1954,'fantastik','lord of the rings'],
+['1984','George Orwell',1949,'bilimkurgu','bin dokuz yuz seksen dort'],
+['Dune','Frank Herbert',1965,'bilimkurgu','çöl gezegeni'],
+['Cesur Yeni Dünya','Aldous Huxley',1932,'bilimkurgu','brave new world'],
+['Vakıf','Isaac Asimov',1951,'bilimkurgu','foundation'],
+['Drakula','Bram Stoker',1897,'korku','dracula'],
+['Frankenstein','Mary Shelley',1818,'korku',''],
+['Cinnet','Stephen King',1977,'korku','the shining parlayan'],
+['Suç ve Ceza','Fyodor Dostoyevski',1866,'klasik','crime and punishment'],
+['Tutunamayanlar','Oğuz Atay',1971,'klasik',''],
+['Bülbülü Öldürmek','Harper Lee',1960,'klasik','to kill a mockingbird'],
+['Benim Adım Kırmızı','Orhan Pamuk',1998,'tarih','my name is red'],
+['Sefiller','Victor Hugo',1862,'klasik','les miserables'],
+['Nutuk','Mustafa Kemal Atatürk',1927,'tarih','']
+].map((b,i)=>({id:'b'+i,t:b[0],a:b[1],y:b[2],g:b[3],al:b[4]}));
+const FX={"Doğu Ekspresinde Cinayet": "🚂 ❄️ 🎩 🔎 🗝️ 🛤️", "Kızıl Dosya": "🔎 🎻 🌫️ 🎩 📰 🏚️", "Ejderha Dövmeli Kız": "🐉 💻 🏝️ 📰 🔎 ❄️", "Da Vinci Şifresi": "🖼️ 🗝️ 🏛️ 🔐 📜 🕯️", "Gülün Adı": "📚 🕯️ ⛪ 🔎 📜 🗝️", "Gurur ve Önyargı": "💌 💃 🏡 🐎 🌹 🫖", "Kürk Mantolu Madonna": "🖼️ 🧥 💌 🚂 🌹 🕰️", "Anna Karenina": "🚂 ❄️ 💃 💌 🐎 🌹", "Harry Potter ve Felsefe Taşı": "🧙 ⚡ 🦉 🪄 🏰 🧹 🎬 🎞️ 🍿", "Hobbit": "🐉 🏔️ 💍 🧙 🏰 🍄", "Yüzüklerin Efendisi": "💍 🧙 🌋 🏔️ 🏹 🐎", "1984": "📺 👀 🐀 🏭 📖 🚫", "Dune": "🏜️ 🪱 🪐 ☀️ 💧 🚀", "Cesur Yeni Dünya": "💊 🧪 🏭 🍼 🚁 🤖", "Vakıf": "🪐 🚀 🌌 📡 🤖 ⭐", "Drakula": "🧛 🦇 🏰 🌙 🩸 🐺", "Frankenstein": "⚡ 🧪 🌩️ 🏚️ 🧟 🕯️", "Cinnet": "🏨 ❄️ 👻 🗝️ 🕯️ 🌲", "Suç ve Ceza": "🪙 ⛪ 🌃 🕯️ 📖 ❄️", "Tutunamayanlar": "📖 🏙️ 🕰️ ☕ 🖋️ 🌃", "Bülbülü Öldürmek": "🐦 🌳 🏡 ⚖️ 📚 🌾", "Benim Adım Kırmızı": "🖌️ 🎨 🕌 📜 🌹 🏺", "Sefiller": "🕯️ 🍞 ⚖️ 🚩 🌉 ⛓️", "Nutuk": "🇹🇷 ⚔️ 🐎 📜 🌅 ⭐"};
+B.forEach(b=>{if(FX[b.t])b.fx=FX[b.t].split(' ')});
+const fxFor=b=>b.fx||[];
+const norm=s=>s.toLocaleLowerCase('tr').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ç/g,'c').replace(/ğ/g,'g').trim();
+let S={my:{},custom:[]},tab='k';
+try{const x=localStorage.getItem('kitapkutusu');if(x)S=JSON.parse(x)}catch(e){}
+const save=()=>{try{localStorage.setItem('kitapkutusu',JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let pool={},remote=null,status='',tm,live={},feat=[],loadingHome=true,stopRev=()=>{},feedRows=[],feedUn=null,extra={};
+const dbReady=(async()=>{try{return window.claude&&claude.use?await claude.use('db'):null}catch(e){return null}})();
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const tk=x=>norm(x).replace(/[^a-z0-9]/g,'');
+function dedupe(l){const seen=new Set(),o=[];for(const b of l){const k=tk(b.t);if(!k||seen.has(k))continue;seen.add(k);o.push(b)}return o}
+const all=()=>dedupe(S.custom.concat(B,Object.values(pool)));
+const AU=[[/rowling|tolkien|c\. ?s\. lewis|sapkowski|george r\. ?r\. martin/i,'fantastik'],[/christie|conan doyle|simenon|stieg larsson|dan brown|umberto eco|chandler|hammett/i,'polisiye'],[/stephen king|bram stoker|mary shelley|lovecraft|edgar allan poe/i,'korku'],[/asimov|frank herbert|orwell|huxley|bradbury|philip k|jules verne|h\. ?g\. wells/i,'bilimkurgu'],[/austen|bront|nicholas sparks|sabahattin ali/i,'ask'],[/dostoy|tolstoy|tolstoi|oğuz atay|victor hugo|kafka|camus|harper lee/i,'klasik']];
+const TI=[[/harry potter|hobbit|narnia|lord of the rings|yüzüklerin/i,'fantastik'],[/sherlock|poirot|holmes/i,'polisiye']];
+const W={polisiye:[[/detective/,3],[/mystery/,2],[/murder/,3],[/crime/,2],[/sleuth|whodunit/,3],[/investigat/,2],[/inspector|police|scotland yard/,2]],
+fantastik:[[/wizard|sorcer|witch/,3],[/magic/,2],[/dragon/,3],[/fantasy/,3],[/hogwarts|middle.earth/,4],[/elf|elves|fairy/,2]],
+ask:[[/romance/,3],[/love stor|love affair/,3],[/\blove\b/,1],[/courtship|marriage/,2]],
+bilimkurgu:[[/science fiction/,4],[/dystopi/,3],[/space|planet|spaceship/,2],[/robot|artificial intelligence/,2],[/alien|time travel/,3]],
+korku:[[/horror/,4],[/vampire|haunted|zombie/,3],[/ghost|monster|gothic|supernatural/,2]],
+tarih:[[/historical fiction/,3],[/histor/,2],[/biograph/,2],[/empire|ottoman|medieval|revolution/,2],[/\bwar\b/,1]],
+klasik:[[/classic/,2],[/russian fiction|english literature|literary/,2]]};
+const KW=[[/wizard|sorcer/,'🧙'],[/magic|spell/,'🪄'],[/\bowl/,'🦉'],[/broom|quidditch/,'🧹'],[/dragon/,'🐉'],[/castle|hogwarts|abbey/,'🏰'],[/train|express|railway/,'🚂'],[/detective|investigat|inspector|sleuth/,'🕵️'],[/murder|crime|killer/,'🔎'],[/letter|diary/,'✉️'],[/newspaper|journalist/,'📰'],[/\bkey\b|secret|code|cipher/,'🗝️'],[/ship|sea\b|island|voyage|ocean/,'⛵'],[/\bwar\b|soldier|battle/,'⚔️'],[/king|queen|crown|prince/,'👑'],[/love|romance|marri/,'💞'],[/rose|flower|garden/,'🌹'],[/\bring\b/,'💍'],[/space|planet|galaxy|star\b/,'🪐'],[/robot|machine|artificial/,'🤖'],[/alien/,'👽'],[/ghost|haunt/,'👻'],[/vampire|blood/,'🧛'],[/\bbats?\b/,'🦇'],[/moon|night/,'🌙'],[/forest|tree/,'🌲'],[/desert|sand/,'🏜️'],[/mountain/,'⛰️'],[/music|violin|song/,'🎻'],[/paint|artist/,'🎨'],[/librar|book/,'📚'],[/\bcat\b/,'🐈'],[/\bdog\b/,'🐕'],[/gold|treasure|money/,'💰'],[/poison/,'🧪'],[/clock|time/,'⏳'],[/city|london|paris|istanbul/,'🏙️'],[/church|monk|monaster/,'⛪'],[/rain/,'☔'],[/school|student/,'🎒']];
+function genreOf(title,author,text){
+ for(const [r,g] of TI)if(r.test(title))return g;
+ for(const [r,g] of AU)if(r.test(author))return g;
+ const t=(title+' '+text).toLowerCase();let best='klasik',bs=1;
+ for(const k in W){let sc=0;W[k].forEach(([r,w])=>{if(r.test(t))sc+=w});if(sc>bs){bs=sc;best=k}}
+ return best}
+const IC={"search":"<circle cx=\"10\" cy=\"10\" r=\"6\"/><path d=\"M15 15l6 6\"/>","key":"<circle cx=\"8\" cy=\"12\" r=\"4\"/><path d=\"M12 12h9M18 12v4M15 12v3\"/>","hat":"<path d=\"M3 16h18M6 16c0-5 1-8 6-8s6 3 6 8M6.5 12.5h11\"/>","book":"<path d=\"M4 5c3-1 6-1 8 1 2-2 5-2 8-1v13c-3-1-6-1-8 1-2-2-5-2-8-1zM12 6v13\"/>","feather":"<path d=\"M20 4c-8 0-13 5-13 12l-3 4M20 4c0 8-5 13-12 13M9 15h6\"/>","heart":"<path d=\"M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z\"/>","rose":"<circle cx=\"12\" cy=\"9\" r=\"4\"/><path d=\"M12 13v8M12 17c-3 0-4-2-4-3M12 18c3 0 4-2 4-3M10 9c0-1.5 4-1.5 4 0\"/>","flower":"<circle cx=\"12\" cy=\"12\" r=\"2\"/><ellipse cx=\"12\" cy=\"6\" rx=\"2.4\" ry=\"3.6\" transform=\"rotate(0 12 12)\"/><ellipse cx=\"12\" cy=\"6\" rx=\"2.4\" ry=\"3.6\" transform=\"rotate(72 12 12)\"/><ellipse cx=\"12\" cy=\"6\" rx=\"2.4\" ry=\"3.6\" transform=\"rotate(144 12 12)\"/><ellipse cx=\"12\" cy=\"6\" rx=\"2.4\" ry=\"3.6\" transform=\"rotate(216 12 12)\"/><ellipse cx=\"12\" cy=\"6\" rx=\"2.4\" ry=\"3.6\" transform=\"rotate(288 12 12)\"/>","ring":"<circle cx=\"12\" cy=\"15\" r=\"6\"/><path d=\"M9 6l3-3 3 3-3 3z\"/>","mail":"<rect x=\"3\" y=\"6\" width=\"18\" height=\"13\" rx=\"2\"/><path d=\"M3 8l9 6 9-6\"/>","moon":"<path d=\"M20 14A8 8 0 1 1 10 4a6.5 6.5 0 0 0 10 10z\"/>","star":"<path d=\"M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z\"/>","rocket":"<path d=\"M12 3c3 2 4 6 4 10l-4 3-4-3c0-4 1-8 4-10z\"/><circle cx=\"12\" cy=\"10\" r=\"1.5\"/><path d=\"M8 14l-3 3 3 1M16 14l3 3-3 1M12 16v5\"/>","planet":"<circle cx=\"12\" cy=\"12\" r=\"5\"/><path d=\"M3 14c2-4 16-8 18-4\"/>","robot":"<rect x=\"5\" y=\"8\" width=\"14\" height=\"11\" rx=\"2\"/><circle cx=\"12\" cy=\"4\" r=\"1\"/><path d=\"M12 5v3M9 13h.01M15 13h.01M9 16h6\"/>","ufo":"<ellipse cx=\"12\" cy=\"14\" rx=\"9\" ry=\"3.5\"/><path d=\"M7 13c0-5 10-5 10 0M8 18l-2 3M16 18l2 3\"/>","castle":"<path d=\"M4 20V8h3v2h2V8h2v2h2V8h2v2h2V8h3v12zM10 20v-5a2 2 0 0 1 4 0v5\"/>","flame":"<path d=\"M12 3c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4 0-7 1-10z\"/>","wand":"<path d=\"M5 19L17 7M17 7l-1-3 3 1 2 2-3 1zM5 8v3M3.5 9.5h3\"/>","owl":"<path d=\"M6 8c0-3 3-4 6-4s6 1 6 4v8a6 6 0 0 1-12 0z\"/><circle cx=\"9.5\" cy=\"10\" r=\"1.8\"/><circle cx=\"14.5\" cy=\"10\" r=\"1.8\"/><path d=\"M12 12l-1 2h2z\"/>","bat":"<path d=\"M12 8c-2-2-4-3-9-3 2 2 2 5 1 7 2-1 4 0 5 2l3-2 3 2c1-2 3-3 5-2-1-2-1-5 1-7-5 0-7 1-9 3z\"/>","ghost":"<path d=\"M5 20V10a7 7 0 0 1 14 0v10l-2.5-2-2.3 2-2.2-2-2.2 2-2.3-2z\"/><path d=\"M9.5 10h.01M14.5 10h.01\"/>","skull":"<path d=\"M5 12a7 7 0 1 1 14 0c0 2-1 3-2 4v3H7v-3c-1-1-2-2-2-4z\"/><path d=\"M9.5 12h.01M14.5 12h.01M12 15v1\"/>","candle":"<rect x=\"9\" y=\"10\" width=\"6\" height=\"11\" rx=\"1\"/><path d=\"M12 3c2 2 2 4 0 5-2-1-2-3 0-5z\"/>","church":"<path d=\"M12 2v5M10 4.5h4M6 22V12l6-5 6 5v10zM10 22v-5h4v5\"/>","crown":"<path d=\"M3 18l1.5-9 5 4L12 6l2.5 7 5-4L21 18z\"/>","sword":"<path d=\"M5 19l11-11M14 5l5-2-2 5M4 16l4 4M3 21l2-2\"/>","ship":"<path d=\"M3 16h18l-3 5H6zM12 3v13M12 4c4 2 6 6 6 10M12 6c-3 2-5 5-5 8\"/>","train":"<rect x=\"5\" y=\"3\" width=\"14\" height=\"14\" rx=\"3\"/><path d=\"M5 11h14M9 14h.01M15 14h.01M8 21l2-4M16 21l-2-4\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>","tree":"<path d=\"M12 3l6 8h-3l4 6H5l4-6H6zM12 17v4\"/>","mountain":"<path d=\"M3 20l6-10 4 6 3-4 5 8z\"/>","sun":"<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2\"/>","snow":"<path d=\"M12 2v20M3.5 7l17 10M20.5 7l-17 10M9.5 3.5L12 6l2.5-2.5M9.5 20.5L12 18l2.5 2.5\"/>","leaf":"<path d=\"M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l9-9\"/>","drop":"<path d=\"M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z\"/>","paper":"<rect x=\"4\" y=\"4\" width=\"14\" height=\"16\" rx=\"1\"/><path d=\"M18 8h3v10a2 2 0 0 1-2 2M7 8h8M7 12h8M7 16h5\"/>","glasses":"<circle cx=\"7\" cy=\"14\" r=\"3.5\"/><circle cx=\"17\" cy=\"14\" r=\"3.5\"/><path d=\"M10.5 14h3M3.5 14L5 8M20.5 14L19 8\"/>","scale":"<path d=\"M12 3v17M7 20h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z\"/>","compass":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M15.5 8.5l-2 5-5 2 2-5z\"/>","flask":"<path d=\"M9 3h6M10 3v6l-5 10a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-10V3M8 16h8\"/>","bird":"<path d=\"M4 12c3 0 5-1 7-3l5-3 2 3-2 1 1 4c-1 3-4 5-8 5-3 0-5-3-5-7z\"/><path d=\"M16 9.5h.01\"/>","coffee":"<path d=\"M5 9h12v6a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M8 3v3M12 3v3\"/>","scroll":"<path d=\"M6 4h12a2 2 0 0 1 2 2v12M6 4a2 2 0 0 0-2 2v2h4M8 8v10a2 2 0 0 0 4 0v-1h8\"/>","city":"<path d=\"M3 21V10h6v11M9 21V4h7v17M16 21v-8h5v8M12 8h.01M12 12h.01M12 16h.01\"/>","eye":"<path d=\"M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","tv":"<rect x=\"3\" y=\"5\" width=\"18\" height=\"12\" rx=\"2\"/><path d=\"M8 21h8M12 17v4\"/>","flag":"<path d=\"M5 21V4M5 4h13l-3 4 3 4H5\"/>","dune":"<path d=\"M2 18c4-8 8-8 10-4s6 2 10-4\"/>","lightning":"<path d=\"M13 2L5 14h6l-1 8 8-12h-6z\"/>","broom":"<path d=\"M4 20l9-9M13 11l4-4 3 3-4 4M13 11c-2 4-5 6-9 9\"/>","cloud":"<path d=\"M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1 0 9z\"/>","music":"<path d=\"M9 18V5l11-2v13\"/><circle cx=\"6.5\" cy=\"18\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"16\" r=\"2.5\"/>","house":"<path d=\"M3 11l9-8 9 8M5 10v10h14V10M10 20v-5h4v5\"/>","temple":"<path d=\"M3 9l9-5 9 5M5 9v9M9 9v9M15 9v9M19 9v9M3 20h18\"/>","factory":"<path d=\"M3 21V9l6 4V9l6 4V5h3v16zM7 17h2M12 17h2\"/>","paw":"<circle cx=\"7\" cy=\"9\" r=\"1.6\"/><circle cx=\"12\" cy=\"6.5\" r=\"1.6\"/><circle cx=\"17\" cy=\"9\" r=\"1.6\"/><path d=\"M12 11c-3 0-5 3-5 5.5 0 2 2 2.5 5 1.5 3 1 5 .5 5-1.5C17 14 15 11 12 11z\"/>","coin":"<circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M12 8v8M9.5 10h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4\"/>","frame":"<rect x=\"4\" y=\"5\" width=\"16\" height=\"14\" rx=\"1\"/><path d=\"M4 16l5-5 4 4 3-3 4 4\"/>"};
+const EMI={"⏳":"clock","☀":"sun","☔":"drop","☕":"coffee","⚔":"sword","⚖":"scale","⚡":"lightning","⛓":"key","⛪":"church","⛰":"mountain","⛵":"ship","✉":"mail","❄":"snow","⭐":"star","🌃":"city","🌅":"sun","🌉":"city","🌊":"dune","🌋":"flame","🌌":"star","🌙":"moon","🌩":"lightning","🌫":"cloud","🌲":"tree","🌳":"tree","🌹":"rose","🌾":"leaf","🍄":"leaf","🍞":"coffee","🍼":"drop","🍿":"tv","🎒":"glasses","🎞":"tv","🎨":"feather","🎩":"hat","🎬":"tv","🎻":"music","🏔":"mountain","🏙":"city","🏚":"house","🏛":"temple","🏜":"dune","🏝":"sun","🏡":"house","🏨":"house","🏭":"factory","🏰":"castle","🏹":"sword","🏺":"flask","🐀":"paw","🐈":"paw","🐉":"flame","🐎":"paw","🐕":"paw","🐦":"bird","🐺":"paw","👀":"eye","👑":"crown","👻":"ghost","👽":"ufo","💃":"heart","💊":"flask","💌":"mail","💍":"ring","💞":"heart","💧":"drop","💰":"coin","💻":"tv","📖":"book","📚":"book","📜":"scroll","📡":"planet","📰":"paper","📺":"tv","🔎":"search","🔐":"key","🔥":"flame","🕌":"temple","🕯":"candle","🕰":"clock","🕵":"glasses","🖋":"feather","🖌":"feather","🖼":"frame","🗝":"key","🚀":"rocket","🚁":"rocket","🚂":"train","🚩":"flag","🚫":"eye","🛤":"train","🤖":"robot","🦇":"bat","🦉":"owl","🧙":"wand","🧛":"bat","🧟":"skull","🧥":"rose","🧪":"flask","🧹":"broom","🩸":"drop","🪄":"wand","🪐":"planet","🪙":"coin","🪱":"dune","🫖":"coffee","🇹":"flag","🧿":"eye"};
+const emIcon=e=>EMI[e.replace(/\ufe0f/g,'')];
+const BT={"Doğu Ekspresinde Cinayet":["#1b2431","#b9c7d8"],"Kızıl Dosya":["#2a1816","#c4504a"],"Ejderha Dövmeli Kız":["#161d24","#7fb2d0"],"Da Vinci Şifresi":["#2b2418","#d6b25e"],"Gülün Adı":["#241d17","#c49a6c"],"Gurur ve Önyargı":["#2a2230","#d9a3b8"],"Kürk Mantolu Madonna":["#2a1c1c","#d08a7a"],"Anna Karenina":["#1e2630","#d0d6e0"],"Harry Potter ve Felsefe Taşı":["#241a33","#e0b64f"],"Hobbit":["#1d2b1e","#c9a84e"],"Yüzüklerin Efendisi":["#231f18","#d6a948"],"1984":["#1c1c1f","#d65a4a"],"Dune":["#3a2a16","#e0a850"],"Cesur Yeni Dünya":["#1b2a2c","#7fd0c0"],"Vakıf":["#141d33","#7fa4e8"],"Drakula":["#251416","#c04858"],"Frankenstein":["#1b2420","#8cc0a0"],"Cinnet":["#1a1d24","#b0c4de"],"Suç ve Ceza":["#221f22","#c09a5e"],"Tutunamayanlar":["#231f1b","#c8b08a"],"Bülbülü Öldürmek":["#2b2418","#d6b878"],"Benim Adım Kırmızı":["#2e1818","#d65a50"],"Sefiller":["#1e2230","#c9a0a0"],"Nutuk":["#2a1616","#e0c06a"]};
+const ic=(n,z)=>`<svg viewBox="0 0 24 24" width="${z}" height="${z}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${IC[n]||IC.book}</svg>`;
+const GI={polisiye:['search','hat','key','paper','glasses','clock'],ask:['heart','mail','rose','ring','feather','coffee'],fantastik:['wand','castle','flame','owl','star','book'],bilimkurgu:['rocket','planet','robot','ufo','star','eye'],korku:['bat','ghost','skull','candle','moon','eye'],klasik:['feather','book','scroll','candle','clock','coffee'],tarih:['castle','scroll','compass','crown','ship','sword']};
+function themeOf(b,g){const t=BT[b.t];if(t)return{c:t[1],bg:`radial-gradient(circle at 18% 8%,${t[1]}2e,${t[0]} 62%)`};return{c:g.c,bg:moodBg(b,g)}}
+function figs(b,g){const t=((b.sub||[]).join(' ')+' '+b.t+' '+(b.ot||'')+' '+(b.desc||'')).toLowerCase();
+ const ex=fxFor(b).slice();KW.forEach(([r,e])=>{if(r.test(t)&&!ex.includes(e))ex.push(e)});
+ const ics=[];ex.forEach(e=>{const n=emIcon(e);if(n&&!ics.includes(n))ics.push(n)});
+ const pl=ics.slice(0,12).concat(ics.slice(0,12),GI[b.g]||GI.klasik);const th=themeOf(b,g);
+ const f=$('fig');f.innerHTML='';f.style.color=th.c;
+ for(let i=0;i<30;i++){const s=document.createElement('span');
+  s.innerHTML=ic(pl[Math.floor(Math.random()*pl.length)],22+Math.random()*26);
+  s.style.cssText=`left:${Math.random()*94}%;top:${Math.random()*94}%;--r:${Math.random()*50-25}deg;--d:${4+Math.random()*5}s;--dl:-${Math.random()*6}s`;
+  f.appendChild(s)}}
+async function enrich(b){b.en=1;
+ try{const j=await (await fetch('https://openlibrary.org'+b.wk+'.json')).json();
+  let d=j.description;d=(d&&typeof d==='object')?d.value:d;
+  b.desc=String(d||'').split(/\r?\n/)[0].replace(/\s*\(\[source\].*$/i,'').slice(0,700);
+  b.sub=(j.subjects||[]).slice(0,30);
+  b.g=genreOf(b.t,b.a,b.sub.join(' ')+' '+b.desc);save();return true}catch(e){return false}}
+const TRM=[[/harry potter and the (philosopher|sorcerer)/i,'Harry Potter ve Felsefe Taşı'],[/harry potter and the chamber/i,'Harry Potter ve Sırlar Odası'],[/prisoner of azkaban/i,'Harry Potter ve Azkaban Tutsağı'],[/goblet of fire/i,'Harry Potter ve Ateş Kadehi'],[/order of the phoenix/i,'Harry Potter ve Zümrüdüanka Yoldaşlığı'],[/half.blood prince/i,'Harry Potter ve Melez Prens'],[/deathly hallows/i,'Harry Potter ve Ölüm Yadigârları'],[/^the hobbit/i,'Hobbit'],[/lord of the rings|fellowship of the ring/i,'Yüzüklerin Efendisi'],[/pride and prejudice/i,'Gurur ve Önyargı'],[/murder on the orient express/i,'Doğu Ekspresinde Cinayet'],[/da vinci code/i,'Da Vinci Şifresi'],[/name of the rose/i,'Gülün Adı'],[/crime and punishment/i,'Suç ve Ceza'],[/brothers karamazov/i,'Karamazov Kardeşler'],[/to kill a mockingbird/i,'Bülbülü Öldürmek'],[/les mis/i,'Sefiller'],[/^dracula/i,'Drakula'],[/brave new world/i,'Cesur Yeni Dünya'],[/animal farm/i,'Hayvan Çiftliği'],[/little prince/i,'Küçük Prens'],[/great gatsby/i,'Muhteşem Gatsby'],[/catcher in the rye/i,'Çavdar Tarlasında Çocuklar'],[/old man and the sea/i,'Yaşlı Adam ve Deniz'],[/^the stranger$/i,'Yabancı'],[/^the trial$/i,'Dava'],[/metamorphosis/i,'Dönüşüm'],[/alice.s adventures in wonderland/i,'Alice Harikalar Diyarında'],[/wuthering heights/i,'Uğultulu Tepeler'],[/war and peace/i,'Savaş ve Barış'],[/sign of (the )?four/i,'Dörtlerin İşareti'],[/study in scarlet/i,'Kızıl Dosya'],[/hound of the baskervilles/i,'Baskerville Köpeği'],[/^the shining/i,'Cinnet'],[/girl with the dragon tattoo/i,'Ejderha Dövmeli Kız'],[/my name is red/i,'Benim Adım Kırmızı']];
+TRM.push(...[[/lion, the witch/i,'Aslan, Cadı ve Dolap'],[/angels (and|&) demons/i,'Melekler ve Şeytanlar'],[/the alchemist/i,'Simyacı'],[/hunger games/i,'Açlık Oyunları'],[/game of thrones/i,'Taht Oyunları'],[/treasure island/i,'Define Adası'],[/around the world in (80|eighty) days/i,'Seksen Günde Devri Âlem'],[/count of monte cristo/i,'Monte Kristo Kontu'],[/picture of dorian gray/i,'Dorian Gray\'in Portresi'],[/robinson crusoe/i,'Robinson Crusoe'],[/hitchhiker/i,'Otostopçunun Galaksi Rehberi'],[/pet sematary/i,'Hayvan Mezarlığı'],[/silence of the lambs/i,'Kuzuların Sessizliği'],[/and then there were none/i,'Ve Sonra Hiçbiri Kalmadı'],[/adventures of sherlock holmes/i,'Sherlock Holmes\'un Maceraları'],[/fahrenheit 451/i,'Fahrenheit 451']]);
+function trT(d){const e=d.editions&&d.editions.docs&&d.editions.docs[0];
+ for(const [r,t] of TRM)if(r.test(d.title))return[t,1];
+ if(e&&e.title&&(e.language||[]).includes('tur'))return[e.title,1];
+ return[d.title,0]}
+const trTitle=d=>trT(d)[0];
+S.custom.forEach(c=>{if(c.ol){c.ot=c.ot||c.t;for(const [r,t] of TRM)if(r.test(c.ot)){c.t=t;c.tr=1;break}}});
+async function search(v){status="Open Library'de aranıyor…";render();
+ const f='limit=20&lang=tur&fields=key,title,author_name,first_publish_year,cover_i,subject,editions,editions.title,editions.language&q=';
+ const get=async q=>{try{return (await (await fetch('https://openlibrary.org/search.json?'+f+encodeURIComponent(q))).json()).docs||[]}catch(e){return null}};
+ const [a,b]=await Promise.all([get(v+' language:tur'),get(v)]);
+ if(a===null&&b===null){remote=null;status="Open Library'ye ulaşılamadı, yerel katalog gösteriliyor.";render();return}
+ const mk=d=>{const [t,tr]=trT(d);return {id:'ol'+d.key.split('/').pop(),t,tr,ot:d.title,a:(d.author_name||['Bilinmeyen yazar'])[0],y:d.first_publish_year||'',g:genreOf(d.title+' '+t,(d.author_name||[''])[0],(d.subject||[]).join(' ')),cv:d.cover_i,wk:d.key,ol:1,sub:(d.subject||[]).slice(0,25)}};
+ const list=(a||[]).concat(b||[]).filter(d=>d.key&&d.title).map(mk);
+ list.forEach(x=>{if(!pool[x.id])pool[x.id]=x});
+ const loc=new Map(all().map(x=>[tk(x.t),x]));
+ let r=dedupe(list.map(x=>loc.get(tk(x.t))||x));
+ const trs=r.filter(x=>x.tr!==0);
+ if(trs.length)r=trs;
+ remote={q:norm(v),list:r.slice(0,30)};
+ status=trs.length?'':'Bu aramada Türkçe adı bulunan kitap çıkmadı; özgün adlar gösteriliyor.';
+ render()}
+const $=id=>document.getElementById(id);
+function item(b){const g=G[b.g],m=S.my[b.id]||{};
+ return `<div class="pt" data-id="${b.id}"><div class="po" style="--c:${g.c};--b:${g.bg}"><span class="pe">${ic((GI[b.g]||GI.klasik)[0],34)}</span><span class="pn">${esc(b.t)}</span>${b.cv?`<img loading="lazy" onerror="this.remove()" src="https://covers.openlibrary.org/b/id/${b.cv}-M.jpg?default=false" alt="">`:''}${m.r?`<i class="bd">★ ${m.r}</i>`:''}${m.done?'<i class="bd dn">✓</i>':''}</div><b>${esc(b.t)}</b><small>${esc(b.a)}</small></div>`}
+function render(){
+ const q=norm($('q').value);let h='';
+ if(tab==='y'){h='<h3 class="fh">Son yorumlar</h3>'+(feedRows.length?feedRows.map(r=>rvCard(r)).join(''):'<div class="empty">Henüz yorum yok. Bir kitaba tıklayıp ilk yorumu yaz.</div>')}
+ else if(tab==='l'){const l=all().filter(b=>{const m=S.my[b.id];return m&&(m.done||m.r||m.n)});
+  h=l.length?`<div class="grid">${l.map(item).join('')}</div>`:'<div class="empty">Kitaplığın henüz boş. Bir kitaba tıklayıp “Okudum” olarak işaretle.</div>'}
+ else if(!q){const seen=new Set();
+  const row=(t,l)=>l.length?`<section class="rw"><h3>${t}</h3><div class="sw"><button class="nav l">‹</button><div class="strip">${l.map(item).join('')}</div><button class="nav r">›</button></div></section>`:'';
+  h=(loadingHome?'<div class="note">Önerilen kitaplar yükleniyor…</div>':'')+row('Popüler kitaplar',feat.slice(0,30))+Object.keys(G).map(k=>row(G[k].n,dedupe(B.filter(b=>b.g===k).concat(live[k]||[])).filter(b=>{const t=tk(b.t);if(seen.has(t))return false;seen.add(t);return true}).slice(0,40))).join('')}
+ else{const r=(remote&&remote.q===q)?remote.list:dedupe(all().filter(b=>norm(b.t+' '+b.a+' '+(b.al||'')+' '+(b.ot||'')).includes(q)));
+  h=(status?`<div class="note">${status}</div>`:'')+(r.length?`<div class="grid">${r.map(item).join('')}</div>`:'');
+  if(!r.length&&!status.includes('aranıyor'))h=`<div class="empty">“${esc($('q').value)}” bulunamadı.<br>Türünü seçip kendin ekleyebilirsin:<div class="gb">${Object.keys(G).map(k=>`<button data-add="${k}">${G[k].n}</button>`).join('')}</div></div>`}
+ $('list').innerHTML=h}
+$('q').oninput=()=>{if($('q').value&&tab!=='k'){tab='k';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t==='k'))}render();clearTimeout(tm);const v=$('q').value.trim();if(v.length<2){remote=null;status='';return}tm=setTimeout(()=>search(v),450)};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{tab=t.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));if(tab==='y')startFeed();render()});
+$('list').onclick=e=>{
+ if(e.target.closest('[data-sp],[data-del],[data-open]')){rvClick(e,()=>render());return}
+ const n=e.target.closest('.nav');
+ if(n){const st=n.parentNode.querySelector('.strip');st.scrollBy({left:(n.classList.contains('l')?-1:1)*st.clientWidth*.8,behavior:'smooth'});return}
+ const a=e.target.closest('[data-add]');
+ if(a){const v=$('q').value.trim(),b={id:'c'+Date.now(),t:v,a:'Bilinmeyen yazar',y:'',g:a.dataset.add};S.custom.push(b);save();open(b.id);return}
+ const i=e.target.closest('.pt');if(i)open(i.dataset.id)};
+function open(id){
+ const b=[...S.custom,...B,...Object.values(pool),...Object.values(extra)].find(x=>x.id===id),m=S.my[id]=S.my[id]||{r:0,n:'',done:false};
+ if(b.ol){const i=S.custom.findIndex(x=>x.id===id);if(i<0)S.custom.push(b);else S.custom[i]=b;save()}
+ const d=$('detail'),p=$('paper');d.hidden=false;d.scrollTop=0;
+ const paint=()=>{const g=G[b.g],th=themeOf(b,g);d.style.setProperty('--bg',th.bg);d.style.setProperty('--acc',th.c);figs(b,g)};
+ const draw=()=>{const g=G[b.g];
+  p.innerHTML=`${b.cv?`<img src="https://covers.openlibrary.org/b/id/${b.cv}-L.jpg" alt="" style="float:right;width:96px;margin:0 0 10px 12px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.5)">`:''}<span class="tag" style="--c:${g.c}">${g.n}</span>${m.done?'<span class="stamp">OKUNDU</span>':''}<h2>${esc(b.t)}</h2><div style="opacity:.75;margin-bottom:12px">${esc(b.a)}${b.y?' · '+b.y:''}${b.ot&&b.ot!==b.t?`<br><small>Özgün adı: ${esc(b.ot)}</small>`:''}</div>
+ ${b.desc?`<p style="line-height:1.5;font-size:.9rem;clear:both">${esc(b.desc)}<br><small>— Open Library</small></p>`:''}
+ <div class="stars" id="st">${[1,2,3,4,5].map(n=>`<button class="star ${n<=m.r?'on':''}" data-n="${n}" aria-label="${n} yıldız">★</button>`).join('')}<small>${m.r?m.r+' / 5':'Puan ver'}</small></div>
+ <div class="row"><button class="btn ${m.done?'on':''}" id="dn">${m.done?'✓ Okudum':'Okudum olarak işaretle'}</button></div>
+ <label>Notlarım</label><textarea id="nt" placeholder="Bu kitap hakkında ne düşünüyorsun?">${esc(m.n||'')}</textarea>`;
+  $('st').onclick=e=>{const x=e.target.closest('.star');if(!x)return;const n=+x.dataset.n;m.r=(m.r===n)?0:n;save();draw()};
+  $('dn').onclick=()=>{m.done=!m.done;save();draw()};
+  $('nt').oninput=e=>{m.n=e.target.value;save()}};
+ paint();draw();stopRev();mountReviews(b);
+ if(b.ol&&b.wk&&!b.en)enrich(b).then(ok=>{if(ok&&!d.hidden){paint();draw()}})}
+const COV={'Kürk Mantolu Madonna':'Madonna in a Fur Coat','Tutunamayanlar':'The Disconnected','Anna Karenina':'Anna Karenina','Dune':'Dune','Frankenstein':'Frankenstein','Doğu Ekspresinde Cinayet':'Murder on the Orient Express','Kızıl Dosya':'A Study in Scarlet','Ejderha Dövmeli Kız':'The Girl with the Dragon Tattoo','Da Vinci Şifresi':'The Da Vinci Code','Gülün Adı':'The Name of the Rose','Gurur ve Önyargı':'Pride and Prejudice','Harry Potter ve Felsefe Taşı':"Harry Potter and the Philosopher's Stone",'Hobbit':'The Hobbit','Yüzüklerin Efendisi':'The Fellowship of the Ring','1984':'Nineteen Eighty-Four','Cesur Yeni Dünya':'Brave New World','Vakıf':'Foundation','Drakula':'Dracula','Cinnet':'The Shining','Suç ve Ceza':'Crime and Punishment','Bülbülü Öldürmek':'To Kill a Mockingbird','Benim Adım Kırmızı':'My Name Is Red','Sefiller':'Les Misérables'};
+const HQ={polisiye:'subject:(mystery OR detective OR crime OR thriller)',ask:'subject:(romance OR "love stories")',fantastik:'subject:(fantasy OR wizards OR dragons)',bilimkurgu:'subject:("science fiction" OR dystopia)',korku:'subject:(horror OR vampires OR ghosts)',klasik:'subject:("classic literature" OR "russian fiction" OR "turkish fiction")',tarih:'subject:("historical fiction" OR "ottoman empire")'};
+const coverImg=b=>`<img loading="lazy" onerror="this.remove()" src="https://covers.openlibrary.org/b/id/${b.cv}-M.jpg?default=false" alt="">`;
+function paintCover(b){document.querySelectorAll('.pt[data-id="'+b.id+'"] .po').forEach(po=>{if(po.querySelector('img'))return;const bd=po.querySelector('.bd');bd?bd.insertAdjacentHTML('beforebegin',coverImg(b)):po.insertAdjacentHTML('beforeend',coverImg(b))})}
+async function coverFor(b){const en=COV[b.t]||b.t,hit=(q,loose)=>fetch('https://openlibrary.org/search.json?limit=8&fields=cover_i,title&'+q).then(r=>r.json()).then(j=>{const d=(j.docs||[]).find(x=>x.cover_i&&(!loose||tk(x.title).slice(0,4)===tk(en).slice(0,4)||tk(x.title).slice(0,4)===tk(b.t).slice(0,4)));return d?d.cover_i:0});
+ const qs=[['title='+encodeURIComponent(en)+'&author='+encodeURIComponent(b.a),0],['title='+encodeURIComponent(en),1],['title='+encodeURIComponent(b.t)+'&author='+encodeURIComponent(b.a),1],['q='+encodeURIComponent(b.t+' '+b.a),1]];
+ let net=false;
+ for(const [q,l] of qs){try{const c=await hit(q,l);if(c)return c}catch(e){net=true;await new Promise(r=>setTimeout(r,700))}}
+ return net?null:0}
+async function fillCovers(){const todo=B.filter(b=>!b.cv);
+ for(let i=0;i<todo.length;i+=3){await new Promise(r=>setTimeout(r,250));await Promise.all(todo.slice(i,i+3).map(async b=>{const c=await coverFor(b);if(c){b.cv=c;(S.cv=S.cv||{})[b.id]=c;paintCover(b)}}));save()}}
+async function loadHome(){
+ await Promise.all(Object.keys(HQ).map(async k=>{
+  try{const u='https://openlibrary.org/search.json?limit=40&sort=readinglog&offset='+(Math.floor(Math.random()*3)*20)+'&lang=tur&fields=key,title,author_name,first_publish_year,cover_i,subject,editions,editions.title,editions.language&q='+encodeURIComponent(HQ[k]+' AND language:tur');
+   const j=await (await fetch(u)).json();
+   const l=(j.docs||[]).filter(d=>d.key&&d.cover_i).map(d=>{const [t,tr]=trT(d);return {id:'ol'+d.key.split('/').pop(),t,tr,ot:d.title,a:(d.author_name||['Bilinmeyen yazar'])[0],y:d.first_publish_year||'',g:k,cv:d.cover_i,wk:d.key,ol:1,sub:(d.subject||[]).slice(0,25)}}).filter(x=>x.tr&&tk(x.t).length>2&&(g2=>g2===k||g2==='klasik')(genreOf(x.ot+' '+x.t,x.a,x.sub.join(' '))));
+   l.forEach(x=>{if(!pool[x.id])pool[x.id]=x});live[k]=l}catch(e){}}));
+ {const top=[];for(let i=0;i<6;i++)Object.keys(G).forEach(k=>{if(live[k]&&live[k][i])top.push(live[k][i])});feat=dedupe(shuf(B).slice(0,8).concat(top))}loadingHome=false;
+ if(tab==='k'&&!$('q').value&&$('detail').hidden)render()}
+KW.push(...[[/kar\b|buz|snow|winter|\bice\b/,'❄️'],[/deniz|gemi|\bsea\b|ocean|\bship/,'🌊'],[/orman|forest|ağaç/,'🌲'],[/çöl|desert/,'🏜️'],[/savaş|\bwar\b|battle|asker/,'⚔️'],[/cinayet|murder|katil|killer|dedektif|polis/,'🔎'],[/aşk|\blove\b|sevgi/,'💞'],[/büyü|sihir|magic|wizard|cadı|witch/,'🪄'],[/uzay|space|gezegen|planet|yıldız/,'🪐'],[/hayalet|ghost|korku|horror/,'👻'],[/vampir|vampire|drakula/,'🧛'],[/şato|castle|kale/,'🏰'],[/tren|train|ekspres/,'🚂'],[/mektup|letter/,'✉️'],[/müzik|music|keman/,'🎻'],[/ressam|painter|nakış|minyatür/,'🖌️'],[/kütüphane|library/,'📚'],[/saat|zaman|\btime\b|clock/,'⏳'],[/ateş|\bfire\b|alev/,'🔥'],[/çiçek|\bgül|\brose\b|flower|garden|bahçe/,'🌹'],[/kral|kraliçe|\bking\b|\bqueen\b|prens|sultan|padişah/,'👑'],[/robot|makine|yapay/,'🤖'],[/ejderha|dragon/,'🐉'],[/\bdağ|mountain/,'⛰️'],[/kedi|\bcat\b/,'🐈'],[/köpek|\bdog\b/,'🐕'],[/atatürk|cumhuriyet|republic/,'🇹🇷'],[/istanbul|osmanlı|ottoman/,'🕌'],[/yağmur|\brain\b/,'☔'],[/zehir|poison/,'🧪'],[/hapis|prison|zindan|cezaevi/,'⛓️'],[/okul|school|öğrenci/,'🎒'],[/hırsız|thief|heist|soygun/,'💰']]);
+const MOODS=[[/sea\b|ocean|ship|voyage|island|deniz|gemi|⛵|🏝️|🌊/,'#16323f'],[/desert|sand|çöl|🏜️|🪱/,'#3d3018'],[/snow|\bice\b|winter|\bkar\b|buz|❄️/,'#1f2e3d'],[/forest|jungle|orman|🌲|🌳/,'#1b2f21'],[/space|planet|galaxy|uzay|🪐|🚀|🌌/,'#11172e'],[/\bwar\b|battle|soldier|savaş|⚔️|blood|🩸/,'#3b1b1b'],[/night|moon|ghost|haunt|gece|🌙|👻/,'#1a1730'],[/love|romance|\brose\b|aşk|💌|🌹|💞/,'#3a2029'],[/castle|medieval|şato|🏰|⛪/,'#2f2733'],[/\bcity\b|london|paris|istanbul|şehir|🏙️|🌃/,'#232a33'],[/volcano|\bfire\b|ateş|🌋|🔥/,'#3d1f12'],[/train|railway|tren|🚂/,'#2a2a22']];
+function moodBg(b,g){const t=((b.sub||[]).join(' ')+' '+b.t+' '+(b.ot||'')+' '+(b.al||'')+' '+(b.desc||'')+' '+fxFor(b).join(' ')).toLowerCase();
+ for(const [r,c] of MOODS)if(r.test(t))return `linear-gradient(165deg,${c},${g.bg} 75%)`;return g.bg}
+const SE={ilkbahar:['flower','flower','leaf'],yaz:['sun','sun','star'],sonbahar:['leaf','leaf','tree'],kis:['snow','snow','snow']};
+function season(k){S.season=k||'';save();document.documentElement.dataset.season=S.season;
+ document.querySelectorAll('.sbtn').forEach(x=>x.classList.toggle('on',x.dataset.s===S.season));
+ const f=$('sea');f.innerHTML='';if(!S.season)return;
+ for(let i=0;i<18;i++){const e=document.createElement('span');e.innerHTML=ic(SE[S.season][i%3],14+Math.random()*14);e.style.cssText=`left:${Math.random()*100}%;animation-duration:${9+Math.random()*10}s;animation-delay:-${Math.random()*14}s`;f.appendChild(e)}}
+const ago=ts=>{const m=Math.round((Date.now()-ts)/60000);return m<1?'az önce':m<60?m+' dk önce':m<1440?Math.round(m/60)+' sa önce':new Date(ts).toLocaleDateString('tr-TR')};
+function avatar(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return `<span class="av" style="background:hsl(${h} 40% 36%)">${esc((n||'O')[0].toUpperCase())}</span>`}
+function bookIdFor(r){const loc=all().find(x=>tk(x.t)===tk(r.t));if(loc)return loc.id;const id='f_'+r.bk;extra[id]={id,t:r.t,a:r.a||'',y:r.y||'',cv:r.cv,g:G[r.g]?r.g:'klasik'};return id}
+function rvCard(r,cp){const g=G[r.g]||G.klasik,nm=r.name||'Okur',tx=esc(r.text);
+ return `<article class="rv${cp?' cp':''}"><div class="rvh"><div class="rvtl"><a class="rvt" data-open="${esc(bookIdFor(r))}">${esc(r.t)}</a> <small>${r.y||''}</small></div><div class="rvu">${esc(nm)} ${avatar(nm)}</div></div>
+ ${r.r||r.heart?`<div class="rvs"><span class="on">${'★'.repeat(r.r||0)}</span><span class="off">${'★'.repeat(5-(r.r||0))}</span>${r.heart?' <span class="hr">♥</span>':''}</div>`:''}
+ <div class="rvb"><div class="rvp" style="--c:${g.c};--b:${g.bg}">${r.cv?`<img onerror="this.remove()" src="https://covers.openlibrary.org/b/id/${r.cv}-M.jpg?default=false" alt="">`:`<span class="rvi">${ic((GI[r.g]||GI.klasik)[0],24)}</span>`}</div><div class="rvx">${r.spoiler?`<div class="spo" data-sp>Yorum spoiler içerebilir.<br><u>Göstermek için dokun</u></div><div class="rvtxt" hidden>${tx}</div>`:`<div class="rvtxt">${tx}</div>`}<small>${ago(r.ts)}${r.uid===S.uid?` · <button class="rx" data-del="${esc(r.id)}">sil</button>`:''}</small></div></div></article>`}
+async function rvClick(e,after){
+ const sp=e.target.closest('[data-sp]');if(sp){sp.hidden=true;sp.nextElementSibling.hidden=false;return}
+ const d=e.target.closest('[data-del]');
+ if(d){const id=d.dataset.del,db=await dbReady;try{if(db)await db.collection('feed').doc(id).delete();else{S.rev=S.rev.filter(r=>r.id!==id);save();feedRows=feedRows.filter(r=>r.id!==id);after&&after()}}catch(x){}return}
+ const o=e.target.closest('[data-open]');if(o)open(o.dataset.open)}
+async function startFeed(){if(feedUn)return;const db=await dbReady;
+ if(db){try{feedUn=db.collection('feed').orderBy('ts','desc').limit(40).onSnapshot(sn=>{feedRows=sn.docs.map(d=>Object.assign({id:d.id},d.data()));if(tab==='y')render()},()=>{})}catch(e){}}
+ else{feedRows=S.rev.slice().sort((a,b)=>b.ts-a.ts);if(tab==='y')render()}}
+function mountReviews(b){
+ const box=$('rev'),key='k_'+tk(b.t);let un=null,rows=[],dbw=null,rr=(S.my[b.id]||{}).r||0,hh=false;
+ S.uid=S.uid||Math.random().toString(36).slice(2,10);
+ const list=()=>{rows.sort((x,y)=>y.ts-x.ts);$('rl').innerHTML=rows.length?rows.map(r=>rvCard(r,1)).join(''):'<div class="note">Henüz yorum yok. İlk yorumu sen yaz.</div>'};
+ const form=()=>{$('rfs').innerHTML=[1,2,3,4,5].map(n=>`<button type="button" class="star ${n<=rr?'on':''}" data-n="${n}">★</button>`).join('')+`<button type="button" class="hbtn ${hh?'on':''}" id="rh" title="Beğendim">♥</button>`};
+ box.innerHTML=`<h3>Okur yorumları</h3><div class="note" id="rnote"></div><input id="rn" class="rin" maxlength="30" placeholder="Adın" value="${esc(S.nick||'')}"><div class="stars" id="rfs"></div><textarea id="rt" maxlength="600" placeholder="Bu kitap hakkında ne düşünüyorsun? Yorumunu herkes görebilir."></textarea><label class="spl"><input type="checkbox" id="rsp"> Spoiler içeriyor</label><div class="row"><button class="btn on" id="rs">Yorumu paylaş</button></div><div id="rl"></div>`;
+ form();
+ $('rfs').onclick=e=>{const x=e.target.closest('.star');if(x){const n=+x.dataset.n;rr=rr===n?0:n;form();return}if(e.target.closest('#rh')){hh=!hh;form()}};
+ stopRev=()=>{if(un){un();un=null}};
+ dbReady.then(db=>{dbw=db;
+  $('rnote').textContent=db?'Bu kitabın yorumlarını sayfayı açan herkes görebilir.':'Yorumlar şimdilik yalnızca bu cihazda saklanıyor. Herkesle paylaşılan yorumlar yayınlanan sürümde çalışır.';
+  if(db){try{un=db.collection('feed').where('bk','==',key).limit(50).onSnapshot(sn=>{rows=sn.docs.map(d=>Object.assign({id:d.id},d.data()));list()},()=>{$('rnote').textContent='Yorumlar yüklenemedi.'})}catch(e){}}
+  else{rows=S.rev.filter(r=>r.bk===key);list()}});
+ $('rs').onclick=async()=>{const text=$('rt').value.trim();if(text.length<2)return;S.nick=$('rn').value.trim().slice(0,30);
+  const row={bk:key,t:b.t,a:b.a||'',y:b.y||'',cv:b.cv||0,g:b.g,name:S.nick||'Okur',text:text.slice(0,600),ts:Date.now(),uid:S.uid,r:rr,heart:hh,spoiler:$('rsp').checked};
+  try{if(dbw){await dbw.collection('feed').add(row)}
+   else{const x=Object.assign({id:'l'+row.ts},row);S.rev.push(x);rows.push(x);list();feedRows=S.rev.slice().sort((a,c)=>c.ts-a.ts)}
+   $('rt').value='';$('rsp').checked=false;save()}
+  catch(e){$('rnote').textContent=(e&&e.code==='invalid_argument')?'Yorum yazabilmek için bu sayfada katılımcı (Contributor) yetkisi gerekiyor.':'Yorum gönderilemedi, tekrar dene.'}};
+ $('rl').onclick=e=>rvClick(e,()=>{rows=S.rev.filter(r=>r.bk===key);list()})}
+$('back').onclick=()=>{stopRev();$('detail').hidden=true;render()};
+if(!Array.isArray(S.rev))S.rev=[];
+B.forEach(b=>{if(S.cv&&S.cv[b.id])b.cv=S.cv[b.id]});
+document.querySelectorAll('.sbtn').forEach(x=>{x.innerHTML=ic({ilkbahar:'flower',yaz:'sun',sonbahar:'leaf',kis:'snow'}[x.dataset.s],20)});
+document.querySelectorAll('.sbtn').forEach(x=>x.onclick=()=>season(S.season===x.dataset.s?'':x.dataset.s));
+season(S.season||'');
+render();fillCovers();loadHome();
+</script>
+</body>
+</html>
